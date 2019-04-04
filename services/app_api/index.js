@@ -45,7 +45,7 @@ class APPServices {
     this.app.delete('/app/wantted/:Wid',
       auth, middleware.isLoggedin(), middleware.deleteWantted());
 
-    this.app.get('/app/path/:Uid/:Nid', middleware.getPath());
+    this.app.get('/:Nid/:Uid', middleware.getPath());
   }
 }
 
