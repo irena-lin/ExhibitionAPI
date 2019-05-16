@@ -4,7 +4,6 @@ const Middleware = require('./middleware');
 class APPServices {
   constructor(options) {
     this.db = options.db;
-    this.passport = options.passport;
 
     this.action = new Action({ db: this.db });
 
@@ -12,41 +11,29 @@ class APPServices {
 
     const middleware = new Middleware({ action: this.action });
 
-    const auth = this.passport.authenticate('jwt', {
-      session: false,
-      failWithError: true,
-    });
+    this.app.get('/app/user', middleware.register1());
+    this.app.post('/app/login/:Uid', middleware.login());
+    this.app.post('/app/user/:Uid', middleware.register());
 
-    this.app.get('/info', middleware.getInfo());
-
-    this.app.post('/app/user', middleware.postUser());
-    this.app.patch('/app/user/:id',
-      auth, middleware.isLoggedin(), middleware.patchUser());
-
-    this.app.get('/app/product', middleware.getProducts());
+    this.app.get('/app/productName', middleware.getProductName());
+    this.app.get('/app/productList', middleware.getProductList());
     this.app.get('/app/product/:id', middleware.getProduct());
 
-    this.app.get('/app/node', middleware.getNodes());
+    this.app.get('/app/feedback/:Pid', middleware.getFeedback());
+    this.app.post('/app/feedback/:Uid/:Pid', middleware.postFeedback());
+    // 好像不太好，不過偷個懶（android 不想寫PATCH, DELETE）
+    // PATCH => get到就用PATCH，沒有用POST
+    // DELETE => ＮＵＬＬ* 2 ，直接 delete 掉
 
-    this.app.get('/app/feedback/:Pid', middleware.getFeedbacks());
-    this.app.post('/app/feedback',
-      auth, middleware.isLoggedin(), middleware.postFeedback());
-    this.app.patch('/app/feedback/:Uid/:Pid',
-      auth, middleware.isLoggedin(), middleware.patchFeedback());
-    this.app.delete('/app/feedback/:Fid',
-      auth, middleware.isLoggedin(), middleware.deleteFeedback());
+    this.app.get('/image/:filename', middleware.getimage());
 
-    this.app.get('/app/wantted/:Uid',
-      auth, middleware.isLoggedin(), middleware.getWantteds());
-    this.app.post('/app/wantted',
-      auth, middleware.isLoggedin(), middleware.postWantted());
-    this.app.patch('/app/wantted/:Wid',
-      auth, middleware.isLoggedin(), middleware.patchWantted());
-    this.app.delete('/app/wantted/:Wid',
-      auth, middleware.isLoggedin(), middleware.deleteWantted());
+    this.app.get('/app/node', middleware.getNode());
 
-    this.app.get('/:Nid/:Uid', middleware.getPath());
+    this.app.get('/app/wantted/:Uid', middleware.getWantted());
+    this.app.post('/app/wantted/:Uid', middleware.postWantted());
+    this.app.get('/app/suggest', middleware.getSuggest());
+    this.app.get('/app/path/:Uid', middleware.getPathUniqe());
+    this.app.get('/app/:Uid/:Pid', middleware.getPath());
   }
 }
-
 module.exports = APPServices;

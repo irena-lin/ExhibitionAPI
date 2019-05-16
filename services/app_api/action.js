@@ -31,6 +31,14 @@ class APPAction {
     return this.db('image').select('Pid', 'Ipath');
   }
 
+  async getProductName() {
+    return this.db('product').select('Pid', 'Pname', 'image_icon');
+  }
+
+  async getProductList() {
+    return this.db('product').select('Pid', 'Pname', 'image_icon', 'description');
+  }
+
   async getProduct(id) {
     return this.db('product').select().where('Pid', id);
   }
@@ -77,6 +85,10 @@ class APPAction {
     return this.db('feedback').del().where('Fid', Fid);
   }
 
+  async deleteFeedbackID(Uid, Pid) {
+    return this.db('feedback').del().where('Pid', Pid).andWhere('Uid', Uid);
+  }
+
   // wantted
   async getWantteds(Uid) {
     return this.db('wantted').select().where('Uid', Uid);
@@ -98,9 +110,17 @@ class APPAction {
     return this.db('wantted').del().where('Wid', Wid);
   }
 
+  async getSuggest() {
+    return this.db('info').select('route');
+  }
+
   // path
   async getPathByUid(Uid) {
     return this.db('path').select().where('Uid', Uid);
+  }
+
+  async getPathByUidDate(Uid, date) {
+    return this.db('path').select().where('Uid', Uid).where('date', date);
   }
 
   async getPath(pathid) {
@@ -111,7 +131,7 @@ class APPAction {
     return this.db('path').insert(data).returning('path_id');
   }
 
-  async patchPath(data, pathId) {
+  async patchPath(pathId, data) {
     return this.db('path').update(data).where('path_id', pathId);
   }
 }
